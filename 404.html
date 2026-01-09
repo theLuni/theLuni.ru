@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<script>
+  // Перенаправляем с /AcrokaUB на /AcrokaUB/index.html
+  const path = window.location.pathname;
+  if (!path.endsWith('/') && !path.endsWith('.html')) {
+    window.location.href = path + '/index.html';
+  }
+</script>
