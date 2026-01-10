@@ -6,18 +6,18 @@
     <title>LUNI | Projects</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ========== RESET & BASE STYLES ========== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         html, body {
-            background: #000000;
-            color: #e0e0ff;
+            background: #0a0a0a;
+            color: #e0e0e0;
             min-height: 100vh;
-            position: relative;
             overflow-x: hidden;
         }
 
@@ -25,11 +25,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 20px;
             min-height: 100vh;
         }
 
-        /* Анимированный фон */
+        /* ========== BACKGROUND ========== */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -37,351 +37,515 @@
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: #000000;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
         }
 
+        /* ========== CONTAINER ========== */
         .container {
             width: 100%;
-            max-width: 550px;
-            background: rgba(10, 10, 10, 0.9);
-            border-radius: 16px;
-            padding: 25px;
+            max-width: 1000px;
+            background: rgba(15, 15, 20, 0.95);
+            border-radius: 20px;
+            padding: 30px;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 
-                0 0 40px rgba(0, 0, 0, 0.8),
-                0 8px 32px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(100, 0, 255, 0.1);
+            backdrop-filter: blur(15px);
             z-index: 1;
-            margin: auto;
         }
 
+        /* ========== HEADER ========== */
         .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            margin-bottom: 25px;
-            position: relative;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .name {
-            font-size: 2.8rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #ffffff, #888888);
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #ffffff, #8888ff, #ffffff);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
         }
 
         .title {
-            color: #ffffff;
-            font-size: 1rem;
-            letter-spacing: 4px;
+            color: #aaaaff;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            opacity: 0.9;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 300;
         }
 
         .motto {
             font-style: italic;
-            color: #aaaaaa;
-            font-size: 0.9rem;
+            color: #8888ff;
+            font-size: 1rem;
             margin-top: 10px;
             opacity: 0.8;
+            font-weight: 300;
         }
 
-        .projects-grid {
+        /* ========== MAIN CONTENT LAYOUT ========== */
+        .main-content {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
-            margin: 25px 0;
+            gap: 30px;
         }
 
+        /* ========== PROJECTS GRID ========== */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* ========== PROJECT CARD ========== */
         .project-card {
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 4px solid;
-            transition: all 0.3s ease;
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
+            transition: all 0.4s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .project-card::before {
             content: '';
             position: absolute;
-            left: 0;
             top: 0;
-            height: 100%;
-            width: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-            transition: width 0.5s;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            z-index: 1;
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
         }
 
         .project-card:hover::before {
-            width: 100%;
+            transform: scaleX(1);
         }
 
         .project-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            background: rgba(25, 25, 25, 0.9);
-        }
-
-        .project-card.music {
-            border-left-color: #ffffff;
-        }
-
-        .project-card.ai {
-            border-left-color: #00ff88;
-        }
-
-        .project-card.userbot {
-            border-left-color: #ff8800;
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(102, 126, 234, 0.3);
         }
 
         .project-number {
-            display: inline-block;
-            width: 28px;
-            height: 28px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            text-align: center;
-            line-height: 28px;
-            font-weight: bold;
-            font-size: 0.8rem;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .project-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 1.5rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .project-title {
             font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #ffffff;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
-        .project-title i {
-            font-size: 1.1rem;
+        .project-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .status-frozen {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
         .project-desc {
             color: #cccccc;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
             opacity: 0.9;
         }
 
         .project-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            gap: 10px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
             text-decoration: none;
-            color: #ffffff;
+            color: white;
             font-weight: 600;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            width: fit-content;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .project-link:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(3px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #764ba2, #667eea);
         }
 
         .project-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .project-tag {
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .tag-telegram {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.3);
         }
 
         .tag-bot {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
         .tag-ai {
-            background: rgba(0, 255, 136, 0.1);
-            color: #00ff88;
-            border: 1px solid rgba(0, 255, 136, 0.3);
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
         .tag-music {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+            border: 1px solid rgba(155, 89, 182, 0.3);
         }
 
         .tag-utility {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+            border: 1px solid rgba(241, 196, 15, 0.3);
         }
 
         .tag-userbot {
-            background: rgba(255, 136, 0, 0.1);
-            color: #ff8800;
-            border: 1px solid rgba(255, 136, 0, 0.3);
+            background: rgba(230, 126, 34, 0.2);
+            color: #e67e22;
+            border: 1px solid rgba(230, 126, 34, 0.3);
         }
 
-        .accent-line {
-            height: 2px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.3),
-                rgba(255, 255, 255, 0.6),
-                rgba(255, 255, 255, 0.3),
-                transparent);
-            margin: 25px 0;
-            opacity: 0.3;
+        /* ========== CONTACTS SECTION ========== */
+        .contacts-section {
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
         }
 
-        .contacts {
-            background: rgba(20, 20, 20, 0.8);
+        .section-title {
+            font-size: 1.4rem;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #667eea;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: rgba(30, 30, 40, 0.8);
             border-radius: 12px;
             padding: 20px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
         }
 
-        .contact-title {
-            font-size: 1.1rem;
-            font-weight: 600;
+        .contact-card:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-5px);
+            background: rgba(35, 35, 45, 0.9);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 1.5rem;
             margin-bottom: 15px;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .contact-item:hover {
-            background: rgba(255, 255, 255, 0.05);
         }
 
         .contact-label {
-            font-size: 0.85rem;
-            color: #aaaaaa;
-            min-width: 120px;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .contact-value {
-            font-size: 0.9rem;
-            color: #ffffff;
+            font-size: 1.1rem;
+            color: white;
             text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
         }
 
         .contact-value:hover {
-            color: #00ff88;
+            color: #667eea;
+            transform: translateX(5px);
         }
 
-        .footer {
-            margin-top: 25px;
+        /* ========== DIVIDER ========== */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1),
+                rgba(102, 126, 234, 0.5),
+                rgba(255, 255, 255, 0.1),
+                transparent);
+            margin: 40px 0;
+        }
+
+        /* ========== BACK LINK ========== */
+        .back-section {
             text-align: center;
-            font-size: 0.7rem;
-            color: #666666;
-            opacity: 0.7;
-            letter-spacing: 1px;
+            margin-top: 30px;
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: #aaaaaa;
+            gap: 12px;
+            padding: 14px 28px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             text-decoration: none;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            padding: 8px 0;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
         .back-link:hover {
-            color: #ffffff;
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* ========== FOOTER ========== */
+        .footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            margin-top: 30px;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .project-card {
-            animation: fadeIn 0.5s ease forwards;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
         }
 
         .project-card:nth-child(1) { animation-delay: 0.1s; }
         .project-card:nth-child(2) { animation-delay: 0.2s; }
         .project-card:nth-child(3) { animation-delay: 0.3s; }
 
-        @media (max-width: 480px) {
+        /* ========== SCROLL BUTTON ========== */
+        .scroll-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .name {
+                font-size: 2.8rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .scroll-btn {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 600px) {
             body {
                 padding: 10px;
-                min-height: 100vh;
-                height: auto;
-                display: block;
             }
             
             .container {
                 padding: 20px;
-                margin: 10px auto;
-                max-width: 100%;
+                border-radius: 15px;
             }
             
             .name {
                 font-size: 2.2rem;
+                letter-spacing: 2px;
+            }
+            
+            .title {
+                font-size: 1rem;
+                letter-spacing: 3px;
+            }
+            
+            .project-card {
+                padding: 20px;
             }
             
             .project-title {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
             
-            .project-desc {
-                font-size: 0.85rem;
+            .scroll-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
             }
             
-            .contact-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            
-            .contact-label {
-                min-width: auto;
+            .contacts-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        @media (max-width: 350px) {
+        @media (max-width: 400px) {
             .container {
                 padding: 15px;
             }
@@ -391,7 +555,25 @@
             }
             
             .title {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+            }
+            
+            .project-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .project-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .project-link {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -399,109 +581,154 @@
 <body>
     <canvas id="bg-canvas"></canvas>
     
+    <!-- Scroll Button -->
+    <button class="scroll-btn" id="scrollBtn">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
     <div class="container">
+        <!-- Header -->
         <div class="header">
             <h1 class="name">LUNI</h1>
             <div class="title">PROJECTS</div>
             <div class="motto">A mystery shrouded in darkness</div>
         </div>
 
-        <div class="projects-grid">
-            <!-- Проект 1 -->
-            <div class="project-card music">
-                <div class="project-number">1</div>
-                <div class="project-title">
-                    <i class="fas fa-music"></i>
-                    LuniMusic (временно заморожен)
+        <!-- Projects -->
+        <div class="main-content">
+            <div class="projects-grid">
+                <!-- Project 1 -->
+                <div class="project-card">
+                    <div class="project-number">1</div>
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div>
+                            <div class="project-title">LuniMusic</div>
+                            <span class="project-status status-frozen">Временно заморожен</span>
+                        </div>
+                    </div>
+                    <div class="project-desc">
+                        🎧 Скачивайте и слушайте музыку прямо в Telegram! Удобно и быстро! 
+                        Бот для поиска и скачивания музыки с интегрированным проигрывателем.
+                    </div>
+                    <a href="http://t.me/LuniMusic_bot" class="project-link" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                        Открыть бота
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag tag-bot">Telegram Bot</span>
+                        <span class="project-tag tag-music">Музыка</span>
+                        <span class="project-tag tag-utility">Утилита</span>
+                    </div>
                 </div>
-                <div class="project-desc">
-                    🎧 Скачивайте и слушайте музыку прямо в Telegram! Удобно и быстро!
+
+                <!-- Project 2 -->
+                <div class="project-card">
+                    <div class="project-number">2</div>
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <div class="project-title">Doctor Due</div>
+                            <span class="project-status status-active">Активен</span>
+                        </div>
+                    </div>
+                    <div class="project-desc">
+                        📄 ИИ-бот, который читает ваш чат, запоминает, как вы общаетесь, 
+                        и отвечает в том же стиле — текстом, мемами и реакциями. 
+                        Персонализированный помощник для Telegram.
+                    </div>
+                    <a href="http://t.me/DoctorDue_sBot" class="project-link" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                        Открыть бота
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag tag-bot">Telegram Bot</span>
+                        <span class="project-tag tag-ai">Искусственный Интеллект</span>
+                        <span class="project-tag tag-utility">Ассистент</span>
+                    </div>
                 </div>
-                <a href="http://t.me/LuniMusic_bot" class="project-link" target="_blank">
-                    <i class="fab fa-telegram"></i>
-                    Открыть бота
-                </a>
-                <div class="project-tags">
-                    <span class="project-tag tag-bot">Telegram Bot</span>
-                    <span class="project-tag tag-music">Музыка</span>
-                    <span class="project-tag tag-utility">Утилита</span>
+
+                <!-- Project 3 -->
+                <div class="project-card">
+                    <div class="project-number">3</div>
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="project-title">Acroka Userbot</div>
+                            <span class="project-status status-active">Активен</span>
+                        </div>
+                    </div>
+                    <div class="project-desc">
+                        Мощный настраиваемый Telegram юзербот с множеством функций. 
+                        Автоматизация, модерация, полезные команды и кастомизация 
+                        для продвинутых пользователей Telegram.
+                    </div>
+                    <a href="https://theluni.ru/AcrokaUB" class="project-link" target="_blank">
+                        <i class="fas fa-external-link-alt"></i>
+                        Подробнее
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag tag-userbot">Userbot</span>
+                        <span class="project-tag tag-telegram">Telegram</span>
+                        <span class="project-tag tag-utility">Автоматизация</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Проект 2 -->
-            <div class="project-card ai">
-                <div class="project-number">2</div>
-                <div class="project-title">
-                    <i class="fas fa-robot"></i>
-                    Doctor Due
+            <!-- Contacts -->
+            <div class="contacts-section">
+                <div class="section-title">
+                    <i class="fas fa-address-card"></i>
+                    Контакты
                 </div>
-                <div class="project-desc">
-                    📄 Читает ваш чат, запоминает, как вы общаетесь, и отвечает в том же стиле — текстом, мемами и реакциями
-                </div>
-                <a href="http://t.me/DoctorDue_sBot" class="project-link" target="_blank">
-                    <i class="fab fa-telegram"></i>
-                    Открыть бота
-                </a>
-                <div class="project-tags">
-                    <span class="project-tag tag-bot">Telegram Bot</span>
-                    <span class="project-tag tag-ai">ИИ</span>
-                    <span class="project-tag tag-utility">Утилита</span>
+                <div class="contacts-grid">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                        <div class="contact-label">Разработчик</div>
+                        <a href="https://t.me/theLuni" class="contact-value" target="_blank">
+                            @theLuni
+                        </a>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="contact-label">Веб-сайт</div>
+                        <a href="https://theluni.ru" class="contact-value" target="_blank">
+                            theluni.ru
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Проект 3 -->
-            <div class="project-card userbot">
-                <div class="project-number">3</div>
-                <div class="project-title">
-                    <i class="fas fa-code"></i>
-                    Acroka Userboy
-                </div>
-                <div class="project-desc">
-                    Мощный настраиваемый Telegram юзербот
-                </div>
-                <a href="https://theluni.ru/AcrokaUB" class="project-link" target="_blank">
-                    <i class="fas fa-external-link-alt"></i>
-                    Подробнее
+            <!-- Divider -->
+            <div class="divider"></div>
+
+            <!-- Back Link -->
+            <div class="back-section">
+                <a href="index.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Вернуться на главную
                 </a>
-                <div class="project-tags">
-                    <span class="project-tag tag-userbot">Userbot</span>
-                    <span class="project-tag tag-telegram">Telegram</span>
-                    <span class="project-tag tag-utility">Утилита</span>
-                </div>
             </div>
         </div>
 
-        <div class="contacts">
-            <div class="contact-title">
-                <i class="fas fa-address-card"></i>
-                Контакты
-            </div>
-            <div class="contact-item">
-                <span class="contact-label">Связь с разработчиком:</span>
-                <a href="https://t.me/theLuni" class="contact-value" target="_blank">t.me/theLuni</a>
-            </div>
-            <div class="contact-item">
-                <span class="contact-label">Био:</span>
-                <a href="https://theluni.ru" class="contact-value" target="_blank">theluni.ru</a>
-            </div>
-        </div>
-
-        <div class="accent-line"></div>
-
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="index.html" class="back-link">
-                <i class="fas fa-arrow-left"></i>
-                Вернуться на главную
-            </a>
-        </div>
-
+        <!-- Footer -->
         <div class="footer">
-            <div>Powered by Luni ⚡</div>
+            <div>Powered by LUNI ⚡ 2024</div>
         </div>
     </div>
 
     <script>
-        // Анимированный фон
+        // ========== BACKGROUND ANIMATION ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         
@@ -513,9 +740,9 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
-        // Частицы для фона
+        // Particles for background
         const particles = [];
-        const particleCount = 60;
+        const particleCount = 80;
         
         class Particle {
             constructor() {
@@ -524,7 +751,7 @@
                 this.size = Math.random() * 2 + 0.5;
                 this.speedX = Math.random() * 0.5 - 0.25;
                 this.speedY = Math.random() * 0.5 - 0.25;
-                this.color = `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`;
+                this.color = `rgba(${Math.random() * 100 + 100}, ${Math.random() * 100 + 100}, 255, ${Math.random() * 0.2 + 0.1})`;
             }
             
             update() {
@@ -554,19 +781,30 @@
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            // Draw gradient background
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, canvas.width
+            );
+            gradient.addColorStop(0, 'rgba(10, 10, 20, 0.1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0.8)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw particles
             for (let particle of particles) {
                 particle.update();
                 particle.draw();
                 
-                // Соединяем близкие частицы
+                // Connect close particles
                 for (let otherParticle of particles) {
                     const dx = particle.x - otherParticle.x;
                     const dy = particle.y - otherParticle.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    if (distance < 100) {
+                    if (distance < 120) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance/100)})`;
+                        ctx.strokeStyle = `rgba(100, 100, 255, ${0.05 * (1 - distance/120)})`;
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(particle.x, particle.y);
                         ctx.lineTo(otherParticle.x, otherParticle.y);
@@ -577,29 +815,66 @@
             
             requestAnimationFrame(animateParticles);
         }
+
+        // ========== SCROLL BUTTON ==========
+        const scrollBtn = document.getElementById('scrollBtn');
         
-        // Эффект при наведении на карточки
+        function checkScrollButton() {
+            if (window.innerWidth <= 900) {
+                scrollBtn.style.display = 'flex';
+            } else {
+                scrollBtn.style.display = 'none';
+            }
+        }
+        
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Update button icon based on scroll position
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                scrollBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                scrollBtn.title = 'Наверх';
+            } else {
+                scrollBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                scrollBtn.title = 'Вниз';
+            }
+        });
+
+        // ========== PROJECT CARD INTERACTIONS ==========
         document.querySelectorAll('.project-card').forEach(card => {
             card.addEventListener('mouseenter', function() {
-                this.style.zIndex = '10';
+                this.style.transform = 'translateY(-10px)';
+                this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.4)';
             });
             
             card.addEventListener('mouseleave', function() {
-                this.style.zIndex = '1';
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
             });
         });
-        
-        // Инициализация
+
+        // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', () => {
             initParticles();
             animateParticles();
+            checkScrollButton();
             
-            // Убедимся, что контейнер не блокирует прокрутку
-            document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
+            // Animate project cards on load
+            const projectCards = document.querySelectorAll('.project-card');
+            projectCards.forEach(card => {
+                card.style.animationPlayState = 'running';
+            });
+            
+            // Set up scroll button functionality
+            window.addEventListener('resize', checkScrollButton);
         });
         
-        // Исправление для мобильных устройств
+        // Touch support
         document.addEventListener('touchstart', function() {}, {passive: true});
     </script>
 </body>
