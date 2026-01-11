@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<script>
+  // Перенаправляем с /AcrokaUB на /AcrokaUB/index.html
+  const path = window.location.pathname;
+  if (!path.endsWith('/') && !path.endsWith('.html')) {
+    window.location.href = path + '/index.html';
+  }
+</script>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 | Страница не найдена</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html, body {
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* ========== BACKGROUND ========== */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+        }
+
+        /* ========== CONTAINER ========== */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(15, 15, 20, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(255, 0, 100, 0.1);
+            backdrop-filter: blur(15px);
+            z-index: 1;
+            text-align: center;
+        }
+
+        /* ========== ERROR CONTENT ========== */
+        .error-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .error-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 
+                0 10px 40px rgba(255, 65, 108, 0.3),
+                0 0 60px rgba(255, 65, 108, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .error-icon i {
+            font-size: 5rem;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 
+                    0 10px 40px rgba(255, 65, 108, 0.3),
+                    0 0 60px rgba(255, 65, 108, 0.2);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 
+                    0 15px 50px rgba(255, 65, 108, 0.4),
+                    0 0 80px rgba(255, 65, 108, 0.3);
+            }
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 65, 108, 0.5);
+            line-height: 1;
+        }
+
+        .error-title {
+            font-size: 2rem;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .error-message {
+            font-size: 1.1rem;
+            color: #cccccc;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .error-hint {
+            background: rgba(255, 65, 108, 0.1);
+            border: 1px solid rgba(255, 65, 108, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .hint-title {
+            font-size: 1.1rem;
+            color: #ff416c;
+            margin-bottom: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hint-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .hint-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            color: #aaaaaa;
+        }
+
+        .hint-list li:before {
+            content: '•';
+            color: #ff416c;
+            position: absolute;
+            left: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* ========== ACTION BUTTONS ========== */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 200px;
+            justify-content: center;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ========== NAVIGATION ========== */
+        .quick-links {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quick-links-title {
+            font-size: 1.1rem;
+            color: #8888ff;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .link-card {
+            background: rgba(30, 30, 40, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .link-card:hover {
+            background: rgba(40, 40, 50, 0.9);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .link-text {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .link-title {
+            font-size: 0.95rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .link-desc {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-name {
+            color: #8888ff;
+            font-weight: 600;
+        }
+
+        /* ========== SCROLL BUTTON ========== */
+        .scroll-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .error-code {
+                font-size: 6rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-message {
+                font-size: 1rem;
+                padding: 0 10px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .error-icon {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .error-icon i {
+                font-size: 4rem;
+            }
+            
+            .scroll-btn {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 25px 15px;
+                border-radius: 15px;
+            }
+            
+            .error-code {
+                font-size: 5rem;
+            }
+            
+            .error-title {
+                font-size: 1.3rem;
+            }
+            
+            .error-hint {
+                padding: 15px;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .scroll-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.1rem;
+            }
+            
+            .btn {
+                padding: 14px 24px;
+                font-size: 0.95rem;
+            }
+            
+            .error-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .error-icon i {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- Scroll Button -->
+    <button class="scroll-btn" id="scrollBtn">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <div class="container">
+        <!-- Error Content -->
+        <div class="error-content">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <div class="error-code">404</div>
+            
+            <h1 class="error-title">Страница не найдена</h1>
+            
+            <p class="error-message">
+                Извините, запрашиваемая вами страница не существует или была перемещена. 
+                Возможно, вы ошиблись в адресе или страница была удалена.
+            </p>
+            
+            <!-- Hint Box -->
+            <div class="error-hint">
+                <div class="hint-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Что можно сделать?
+                </div>
+                <ul class="hint-list">
+                    <li>Проверьте правильность введенного URL-адреса</li>
+                    <li>Вернитесь на главную страницу</li>
+                    <li>Воспользуйтесь навигацией ниже</li>
+                    <li>Свяжитесь с администратором, если проблема повторяется</li>
+                </ul>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="index.html" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    На главную
+                </a>
+                <a href="projects.html" class="btn btn-secondary">
+                    <i class="fas fa-code"></i>
+                    Проекты
+                </a>
+            </div>
+        </div>
+        
+        <!-- Quick Navigation -->
+        <div class="quick-links">
+            <div class="quick-links-title">Быстрые ссылки</div>
+            <div class="links-grid">
+                <a href="index.html" class="link-card">
+                    <div class="link-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="link-text">
+                        <div class="link-title">Профиль</div>
+                        <div class="link-desc">Главная страница</div>
+                    </div>
+                </a>
+                
+                <a href="projects.html" class="link-card">
+                    <div class="link-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="link-text">
+                        <div class="link-title">Проекты</div>
+                        <div class="link-desc">Мои работы</div>
+                    </div>
+                </a>
+                
+                <a href="https://t.me/theLuni" class="link-card" target="_blank">
+                    <div class="link-icon">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="link-text">
+                        <div class="link-title">Telegram</div>
+                        <div class="link-desc">Связаться</div>
+                    </div>
+                </a>
+                
+                <a href="https://github.com/theLuni" class="link-card" target="_blank">
+                    <div class="link-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <div class="link-text">
+                        <div class="link-title">GitHub</div>
+                        <div class="link-desc">Код проектов</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>Ошибка 404 • <span class="footer-name">LUNI</span> ⚡ 2024</div>
+            <div style="margin-top: 5px; font-size: 0.75rem; opacity: 0.7;">
+                Страница не найдена | Page not found
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== BACKGROUND ANIMATION ==========
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = Math.max(window.innerHeight, document.body.scrollHeight);
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Particles for background
+        const particles = [];
+        const particleCount = 70;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                // Red particles for 404 page
+                this.color = `rgba(${Math.random() * 100 + 155}, ${Math.random() * 50}, ${Math.random() * 50 + 100}, ${Math.random() * 0.2 + 0.1})`;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw gradient background
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, canvas.width
+            );
+            gradient.addColorStop(0, 'rgba(20, 10, 15, 0.1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0.8)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw particles
+            for (let particle of particles) {
+                particle.update();
+                particle.draw();
+                
+                // Connect close particles
+                for (let otherParticle of particles) {
+                    const dx = particle.x - otherParticle.x;
+                    const dy = particle.y - otherParticle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 100, 100, ${0.04 * (1 - distance/120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(otherParticle.x, otherParticle.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animateParticles);
+        }
+
+        // ========== SCROLL BUTTON ==========
+        const scrollBtn = document.getElementById('scrollBtn');
+        
+        function checkScrollButton() {
+            if (window.innerWidth <= 768) {
+                scrollBtn.style.display = 'flex';
+            } else {
+                scrollBtn.style.display = 'none';
+            }
+        }
+        
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Update button icon based on scroll position
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                scrollBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                scrollBtn.title = 'Наверх';
+            } else {
+                scrollBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                scrollBtn.title = 'Вниз';
+            }
+        });
+
+        // ========== ERROR PAGE EFFECTS ==========
+        function createErrorEffect() {
+            const errorCode = document.querySelector('.error-code');
+            let isGlitching = false;
+            
+            function glitchEffect() {
+                if (isGlitching) return;
+                isGlitching = true;
+                
+                const originalText = errorCode.textContent;
+                const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+                
+                // Случайный глитч
+                let glitchedText = '';
+                for (let i = 0; i < originalText.length; i++) {
+                    if (Math.random() > 0.7) {
+                        glitchedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                    } else {
+                        glitchedText += originalText[i];
+                    }
+                }
+                
+                errorCode.textContent = glitchedText;
+                errorCode.style.color = '#ff0000';
+                
+                // Возвращаем нормальный текст через случайное время
+                setTimeout(() => {
+                    errorCode.textContent = originalText;
+                    errorCode.style.color = '';
+                    isGlitching = false;
+                }, 100);
+            }
+            
+            // Случайные глитчи
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    glitchEffect();
+                }
+            }, 3000);
+        }
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            animateParticles();
+            checkScrollButton();
+            createErrorEffect();
+            
+            // Set up scroll button functionality
+            window.addEventListener('resize', checkScrollButton);
+            
+            // Add some interactive effects
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+        
+        // Touch support
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
