@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoMeta — экономьте время в чатах</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== ПЕРЕМЕННЫЕ И БАЗА ========== */
+        :root {
+            --primary: #8A2BE2;
+            --primary-light: #9b5fe0;
+            --secondary: #FF6B9D;
+            --dark-bg: #0A0A14;
+            --card-bg: rgba(20, 20, 35, 0.92);
+            --text-main: #F0F0FF;
+            --text-secondary: #B0B0D0;
+            --danger: #FF5252;
+            --success: #4CAF50;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(138, 43, 226, 0.15) 0%, rgba(255, 107, 157, 0.15) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.7;
+            background-image: 
+                radial-gradient(circle at 15% 30%, rgba(138, 43, 226, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 85% 70%, rgba(255, 107, 157, 0.08) 0%, transparent 25%);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* ========== ОСНОВНОЙ КОНТЕЙНЕР ========== */
+        .main-container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.03),
+                0 0 120px rgba(138, 43, 226, 0.1);
+            backdrop-filter: blur(20px);
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient);
+            z-index: 2;
+        }
+
+        /* ========== ЗАГОЛОВОК ========== */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .title-main {
+            font-size: 3.2rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #FFF 30%, var(--primary-light) 70%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.1;
+        }
+
+        .title-sub {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 30px;
+            font-weight: 400;
+        }
+
+        .warning-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 82, 82, 0.12);
+            border: 1px solid rgba(255, 82, 82, 0.25);
+            border-radius: 50px;
+            padding: 14px 28px;
+            color: #FF9999;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        .warning-badge i {
+            font-size: 1.3rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* ========== КОНТЕНТ И ПРИМЕРЫ ========== */
+        .content-section {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+        }
+
+        .definition-box {
+            background: var(--gradient-subtle);
+            border-radius: 22px;
+            padding: 35px;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            position: relative;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            color: var(--text-main);
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .definition-text {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .bad-examples {
+            background: rgba(255, 82, 82, 0.08);
+            border-radius: 18px;
+            padding: 30px;
+            border-left: 5px solid var(--danger);
+        }
+
+        .good-advice {
+            background: rgba(76, 175, 80, 0.08);
+            border-radius: 18px;
+            padding: 30px;
+            border-left: 5px solid var(--success);
+        }
+
+        .example-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .example-list li {
+            padding: 18px 22px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .example-list li:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .example-list li i.fa-times {
+            color: var(--danger);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .example-list li i.fa-check {
+            color: var(--success);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .example-text {
+            flex: 1;
+            font-size: 1.15rem;
+        }
+
+        /* ========== КАРТИНКА ========== */
+        .image-section {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .image-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .image-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .image-fallback {
+            width: 100%;
+            padding: 60px 30px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .image-note {
+            margin-top: 20px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        /* ========== ОБЪЯСНЕНИЕ ========== */
+        .explanation-box {
+            background: rgba(30, 30, 50, 0.6);
+            border-radius: 22px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .explanation-item {
+            margin-bottom: 35px;
+        }
+
+        .explanation-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .explanation-title {
+            font-size: 1.4rem;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ========== ИТОГ ========== */
+        .final-section {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .final-message {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 25px;
+            line-height: 1.2;
+        }
+
+        .final-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ========== АДАПТИВНОСТЬ ========== */
+        @media (max-width: 1024px) {
+            .main-container {
+                padding: 40px;
+                border-radius: 24px;
+            }
+            
+            .title-main {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .main-container {
+                padding: 35px 25px;
+                border-radius: 22px;
+                margin: 10px auto;
+            }
+            
+            .title-main {
+                font-size: 2.3rem;
+            }
+            
+            .title-sub {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+            }
+            
+            .definition-text {
+                font-size: 1.15rem;
+            }
+            
+            .example-list li {
+                padding: 15px 18px;
+            }
+            
+            .example-text {
+                font-size: 1.05rem;
+            }
+            
+            .image-container {
+                padding: 20px;
+            }
+            
+            .final-message {
+                font-size: 1.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            .title-main {
+                font-size: 1.9rem;
+            }
+            
+            .warning-badge {
+                padding: 12px 20px;
+                font-size: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .definition-box, .bad-examples, .good-advice, .explanation-box {
+                padding: 25px 20px;
+            }
+            
+            .section-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .image-title {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .final-message {
+                font-size: 1.7rem;
+            }
+        }
+
+        /* ========== ТИПОГРАФИЯ И ДЕТАЛИ ========== */
+        strong {
+            color: var(--primary-light);
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--primary-light);
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(138, 43, 226, 0.4);
+            transition: border-bottom 0.2s ease;
+        }
+
+        a:hover {
+            border-bottom: 1px solid var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- ЗАГОЛОВОК -->
+        <section class="hero-section">
+            <h1 class="title-main">NoMeta: Не задавайте мета-вопросов</h1>
+            <p class="title-sub">Экономьте время своё и других людей в чатах и мессенджерах. Задавайте вопросы сразу и по делу.</p>
+            <div class="warning-badge">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Мета-вопросы крадут время и снижают продуктивность</span>
+            </div>
+        </section>
+
+        <div class="content-section">
+            <!-- ЧТО ТАКОЕ МЕТА-ВОПРОС -->
+            <section class="definition-box">
+                <h2 class="section-title">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Что такое мета-вопрос?</span>
+                </h2>
+                <p class="definition-text">
+                    <strong>Мета-вопрос</strong> — это предварительный вопрос о возможности задать вопрос. Он не содержит сути, а только проверяет возможность общения.
+                </p>
+                
+                <div class="bad-examples">
+                    <h3 class="section-title" style="color: #FF9999; font-size: 1.4rem;">
+                        <i class="fas fa-times"></i>
+                        <span>Примеры мета-вопросов (не делайте так):</span>
+                    </h3>
+                    <ul class="example-list">
+                        <li>
+                            <i class="fas fa-times"></i>
+                            <span class="example-text">«Можно ли задать вопрос?»</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-times"></i>
+                            <span class="example-text">«Есть, кто разбирается в Python?»</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-times"></i>
+                            <span class="example-text">«Привет. Ты здесь? Есть минутка?»</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-times"></i>
+                            <span class="example-text">«Ребят, есть вопросик по React...»</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-times"></i>
+                            <span class="example-text">Просто «Здравствуйте», «Привет» или «Пинг» без контекста</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- КАРТИНКА -->
+            <section class="image-section">
+                <h2 class="image-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Наглядное сравнение</span>
+                </h2>
+                <div class="image-container">
+                    <img src="https://nometa.xyz/bad-good-ru.png" alt="Сравнение плохого и хорошего подхода в чате" onerror="this.style.display='none'; document.getElementById('fallback').style.display='block';">
+                    <div id="fallback" class="image-fallback" style="display: none;">
+                        <i class="fas fa-image" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <p>Изображение: сравнение эффективности общения в чате</p>
+                        <p style="margin-top: 15px; font-size: 1rem;">
+                            <strong>Плохой подход:</strong> Отдельное приветствие → пауза → вопрос (теряется время)<br>
+                            <strong>Хороший подход:</strong> Приветствие + вопрос сразу (экономия времени)
+                        </p>
+                    </div>
+                </div>
+                <p class="image-note">Наглядная демонстрация, как мета-вопросы создают бесполезные паузы в диалоге</p>
+            </section>
+
+            <!-- ПОЧЕМУ ЭТО ПЛОХО -->
+            <section class="explanation-box">
+                <h2 class="section-title">
+                    <i class="fas fa-brain"></i>
+                    <span>Почему это проблема?</span>
+                </h2>
+                
+                <div class="explanation-item">
+                    <h3 class="explanation-title">
+                        <i class="fas fa-clock"></i>
+                        <span>1. Тратится время всех участников</span>
+                    </h3>
+                    <p>Вы стараетесь быть вежливым, но в цифровом общении это работает иначе. Пока вы формулируете основной вопрос, собеседник просто ждёт. Вместо проявления вежливости вы создаёте паузу и снижаете продуктивность.</p>
+                </div>
+                
+                <div class="explanation-item">
+                    <h3 class="explanation-title">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>2. Ломает асинхронное общение</span>
+                    </h3>
+                    <p>Чаты и мессенджеры хороши тем, что позволяют общаться асинхронно. Если вы сразу задаёте вопрос, собеседник может ответить, когда освободится. Мета-вопрос «Привет?» без контекста заставляет его ждать вашего следующего сообщения.</p>
+                </div>
+                
+                <div class="good-advice">
+                    <h3 class="section-title" style="color: #90EE90; font-size: 1.4rem;">
+                        <i class="fas fa-check"></i>
+                        <span>Правильный подход:</span>
+                    </h3>
+                    <ul class="example-list">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span class="example-text"><strong>Вместо:</strong> «Привет. Есть минутка?»</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-down" style="color: var(--text-secondary); margin-left: 20px;"></i>
+                            <span class="example-text"><strong>Напишите сразу:</strong> «Привет! Я работаю над [задача] и столкнулся с [проблема]. Подскажи, как лучше сделать?»</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ИТОГОВОЕ СООБЩЕНИЕ -->
+            <section class="final-section">
+                <p class="final-message">Задавайте вопрос сразу!</p>
+                <p class="final-subtitle">Будьте эффективны, уважайте время своих коллег и друзей. Общение станет быстрее и продуктивнее.</p>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Плавное появление элементов при прокрутке
+        document.addEventListener('DOMContentLoaded', function() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Анимируем основные секции
+            const sections = document.querySelectorAll('.definition-box, .image-section, .explanation-box, .final-section');
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+            
+            // Задержка для заголовка
+            setTimeout(() => {
+                document.querySelector('.hero-section').style.opacity = '1';
+                document.querySelector('.hero-section').style.transform = 'translateY(0)';
+            }, 300);
+            
+            // Проверка загрузки изображения
+            const img = document.querySelector('.image-container img');
+            if (img) {
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                    this.style.transition = 'opacity 0.5s ease';
+                });
+                
+                // Если изображение не загрузилось через 3 секунды
+                setTimeout(() => {
+                    if (!img.complete || img.naturalHeight === 0) {
+                        document.getElementById('fallback').style.display = 'block';
+                    }
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
