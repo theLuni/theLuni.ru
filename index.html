@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUNI | Yakuza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html, body {
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* ========== BACKGROUND ========== */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+        }
+
+        /* ========== CONTAINER ========== */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(15, 15, 20, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(100, 0, 255, 0.1);
+            backdrop-filter: blur(15px);
+            z-index: 1;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .name {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #ffffff, #8888ff, #ffffff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .title {
+            color: #aaaaff;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            color: #ff5555;
+            font-weight: 500;
+        }
+
+        .status i {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ========== BEST LINK ========== */
+        .best-link {
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(100, 0, 255, 0.15);
+            border: 1px solid rgba(100, 0, 255, 0.3);
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.85rem;
+            color: #aa88ff;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .best-link:hover {
+            background: rgba(100, 0, 255, 0.25);
+            border-color: rgba(100, 0, 255, 0.5);
+            color: #ccbbff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 0, 255, 0.2);
+        }
+
+        .best-link i {
+            font-size: 0.8rem;
+            color: #bb99ff;
+        }
+
+        /* ========== MAIN CONTENT LAYOUT ========== */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* ========== LEFT COLUMN ========== */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* ========== AUDIO PLAYER ========== */
+        .audio-player {
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(100, 100, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-player::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            z-index: 1;
+        }
+
+        .audio-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .audio-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .audio-info {
+            flex-grow: 1;
+        }
+
+        .audio-info h4 {
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .audio-info p {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .audio-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .main-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .play-btn.playing {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .volume-slider {
+            flex-grow: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .volume-level {
+            position: absolute;
+            height: 100%;
+            width: 70%;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .tracks-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .tracks-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ========== RIGHT COLUMN ========== */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* ========== PROFILE CARD ========== */
+        .profile-card {
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .avatar-loading {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            background: rgba(20, 20, 30, 0.8);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(102, 126, 234, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .profile-tagline {
+            font-size: 0.95rem;
+            color: #aaaaff;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.python {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .badge.web {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .badge.age {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .badge.location {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+
+        /* ========== INFO GRID ========== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-card {
+            background: rgba(20, 20, 30, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 3px solid #667eea;
+        }
+
+        .card-label {
+            font-size: 0.7rem;
+            color: #888;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 1rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* ========== LINKS ========== */
+        .links-section {
+            grid-column: 1 / -1;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(30, 30, 40, 0.8);
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: width 0.5s;
+        }
+
+        .link:hover::before {
+            width: 100%;
+        }
+
+        .link:hover {
+            transform: translateY(-5px);
+            border-color: rgba(102, 126, 234, 0.3);
+            background: rgba(40, 40, 50, 0.9);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .link-content {
+            flex-grow: 1;
+        }
+
+        .link-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+            color: white;
+        }
+
+        .link-desc {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* ========== DIVIDER ========== */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1),
+                rgba(102, 126, 234, 0.5),
+                rgba(255, 255, 255, 0.1),
+                transparent);
+            margin: 30px 0;
+            grid-column: 1 / -1;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            grid-column: 1 / -1;
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(30, 30, 40, 0.8);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .track-item:hover {
+            background: rgba(40, 40, 50, 0.9);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateX(5px);
+        }
+
+        .track-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .track-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .track-info {
+            flex-grow: 1;
+        }
+
+        .track-title {
+            font-size: 1rem;
+            color: white;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .track-artist {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .track-duration {
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* ========== SCROLL BUTTON ========== */
+        .scroll-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .links {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .name {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+            
+            .name {
+                font-size: 2.2rem;
+                letter-spacing: 2px;
+            }
+            
+            .title {
+                font-size: 1rem;
+                letter-spacing: 3px;
+            }
+            
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .avatar, .avatar-loading {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .scroll-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .audio-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            .play-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.3rem;
+            }
+            
+            .control-btn {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .name {
+                font-size: 1.8rem;
+            }
+            
+            .title {
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+            }
+            
+            .profile-name {
+                font-size: 1.3rem;
+            }
+            
+            .links {
+                gap: 10px;
+            }
+            
+            .link {
+                padding: 12px;
+            }
+            
+            .link-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .best-link {
+                font-size: 0.75rem;
+                padding: 5px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- Scroll Button for Mobile -->
+    <button class="scroll-btn" id="scrollBtn">
+        <i class="fas fa-chevron-down"></i>
+    </button>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="name">LUNI</h1>
+            <div class="title">YAKUZA</div>
+            <div class="status">
+                <i class="fas fa-circle"></i>
+                <span>BUSY</span>
+            </div>
+            <!-- Добавленная надпись с ссылкой -->
+            <a href="https://t.me/towaNo_KIga" class="best-link" target="_blank">
+                <i class="fas fa-star"></i>
+                <span>ЛУЧШАЯ @towaNo_KIga</span>
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Audio Player -->
+                <div class="audio-player">
+                    <div class="audio-header">
+                        <div class="audio-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="audio-info">
+                            <h4 id="currentTrackTitle">Show</h4>
+                            <p id="currentTrackArtist">Ado</p>
+                        </div>
+                    </div>
+                    
+                    <div class="audio-controls">
+                        <div class="main-controls">
+                            <button class="control-btn" id="rewindBtn">
+                                <i class="fas fa-backward"></i>
+                            </button>
+                            <button class="play-btn" id="playBtn">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="control-btn" id="forwardBtn">
+                                <i class="fas fa-forward"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="progress-container" id="progressContainer">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
+                        
+                        <div class="volume-control">
+                            <i class="fas fa-volume-up"></i>
+                            <div class="volume-slider" id="volumeSlider">
+                                <div class="volume-level" id="volumeLevel"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="tracks-btn" id="tracksBtn">
+                            <i class="fas fa-list-music"></i>
+                            <span>Список треков</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="avatar-container">
+                        <div class="avatar-loading" id="avatarLoading">
+                            <div class="loading-spinner"></div>
+                        </div>
+                        <img src="" alt="LUNI" class="avatar" id="avatarImg" style="display: none;">
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name">LUNI</div>
+                        <div class="profile-tagline">Developer & Yakuza Enthusiast</div>
+                        <div class="badges">
+                            <span class="badge python">Python</span>
+                            <span class="badge web">HTML/CSS</span>
+                            <span class="badge age">16 y.o.</span>
+                            <span class="badge location">Unknown</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="card-label">Telegram</div>
+                        <div class="card-value">@theLuni</div>
+                        <div class="card-sub">ID: 5929120983</div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="card-label">From</div>
+                        <div class="card-value">Unknown</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Links Section -->
+            <div class="links-section">
+                <div class="divider"></div>
+                
+                <div class="links" id="linksSection">
+                    <a href="https://t.me/theLuni" class="link" target="_blank">
+                        <div class="link-icon">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                        <div class="link-content">
+                            <div class="link-title">Telegram</div>
+                            <div class="link-desc">Личный профиль</div>
+                        </div>
+                    </a>
+
+                    <a href="https://vk.com/luniyakuza" class="link" target="_blank">
+                        <div class="link-icon">
+                            <i class="fab fa-vk"></i>
+                        </div>
+                        <div class="link-content">
+                            <div class="link-title">VK</div>
+                            <div class="link-desc">Социальная сеть</div>
+                        </div>
+                    </a>
+
+                    <a href="https://s.team/p/jwrj-vrrk/hwbgdjvj" class="link" target="_blank">
+                        <div class="link-icon">
+                            <i class="fab fa-steam"></i>
+                        </div>
+                        <div class="link-content">
+                            <div class="link-title">Steam</div>
+                            <div class="link-desc">Игровой профиль</div>
+                        </div>
+                    </a>
+
+                    <a href="https://music.yandex.ru/users/ken.mort/playlists/3" class="link" target="_blank">
+                        <div class="link-icon">
+                            <i class="fab fa-yandex"></i>
+                        </div>
+                        <div class="link-content">
+                            <div class="link-title">Яндекс.Музыка</div>
+                            <div class="link-desc">Плейлисты</div>
+                        </div>
+                    </a>
+
+                    <a href="https://shikimori.one/theLuni/list/anime" class="link" target="_blank">
+                        <div class="link-icon">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                        <div class="link-content">
+                            <div class="link-title">Shikimori</div>
+                            <div class="link-desc">Список аниме</div>
+                        </div>
+                    </a>
+
+                    <a href="https://github.com/theLuni" class="link" target="_blank">
+                        <div class="link-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="link-content">
+                            <div class="link-title">GitHub</div>
+                            <div class="link-desc">Проекты и код</div>
+                        </div>
+                    </a>
+
+                    <a href="https://www.tiktok.com/@red_tsoik" class="link" target="_blank">
+                    <div class="link-icon">
+                        <i class="fab fa-tiktok"></i>
+                    </div>
+                    <div class="link-content">
+                        <div class="link-title">TikTok</div>
+                        <div class="link-desc">Тикток аккаунт</div>
+                        </div>
+                    </a>
+
+                    <a href="projects.html" class="link">
+                        <div class="link-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="link-content">
+                            <div class="link-title">Мои проекты</div>
+                            <div class="link-desc">Перейти к проектам</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div>Powered by LUNI ⚡ 2026</div>
+        </div>
+    </div>
+
+    <!-- Modal for Tracks -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Выбор трека</h2>
+                <button class="close-btn" id="closeModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="track-list" id="trackList">
+                <!-- Tracks will be added by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== BACKGROUND ANIMATION ==========
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = Math.max(window.innerHeight, document.body.scrollHeight);
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Particles for background
+        const particles = [];
+        const particleCount = 80;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.color = `rgba(${Math.random() * 100 + 100}, ${Math.random() * 100 + 100}, 255, ${Math.random() * 0.2 + 0.1})`;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw gradient background
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, canvas.width
+            );
+            gradient.addColorStop(0, 'rgba(10, 10, 20, 0.1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0.8)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw particles
+            for (let particle of particles) {
+                particle.update();
+                particle.draw();
+                
+                // Connect close particles
+                for (let otherParticle of particles) {
+                    const dx = particle.x - otherParticle.x;
+                    const dy = particle.y - otherParticle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(100, 100, 255, ${0.05 * (1 - distance/120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(otherParticle.x, otherParticle.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animateParticles);
+        }
+
+        // ========== TRACKS SYSTEM ==========
+// ========== TRACKS SYSTEM ==========
+        const tracks = [
+            { 
+                file: 'music/1.mp3', 
+                title: 'Show', 
+                artist: 'Ado', 
+                duration: '3:10' 
+            },
+            { 
+                file: 'music/2.mp3', 
+                title: 'Candy Flip', 
+                artist: 'Элджей', 
+                duration: '2:23' 
+            },
+            { 
+                file: 'music/3.mp3', 
+                title: 'The Search', 
+                artist: 'NF', 
+                duration: '4:08' 
+            },
+            { 
+                file: 'music/4.mp3', 
+                title: 'Гореть как звезды', 
+                artist: 'Танисия', 
+                duration: '3:54' 
+            },
+            // Новые добавленные треки
+            { 
+                file: 'music/5.mp3', 
+                title: 'Бриллианты', 
+                artist: 'ЛСП', 
+                duration: '2:38' 
+            },
+            { 
+                file: 'music/6.mp3', 
+                title: 'Танцуй', 
+                artist: 'Кишлак', 
+                duration: '2:07' 
+            },
+            { 
+                file: 'music/7.mp3', 
+                title: 'Opening', 
+                artist: 'Youjo Senki Saga of Tanya the Evil', 
+                duration: '3:50' 
+            },
+            { 
+                file: 'music/8.mp3', 
+                title: 'Reaper', 
+                artist: 'XLR8', 
+                duration: '3:44' 
+            },
+            { 
+                file: 'music/10.mp3', 
+                title: 'Opening', 
+                artist: 'CHAINSAW MAN', 
+                duration: '1:30' 
+            },
+            { 
+                file: 'music/9.mp3', 
+                title: 'Сайт', 
+                artist: 'Раковая Выхухоль', 
+                duration: '2:25' 
+            }
+        ];
+        let currentTrackIndex = 0;
+        const audio = new Audio(tracks[currentTrackIndex].file);
+        
+        // ========== PLAYER ELEMENTS ==========
+        const playBtn = document.getElementById('playBtn');
+        const rewindBtn = document.getElementById('rewindBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeLevel = document.getElementById('volumeLevel');
+        const currentTrackTitle = document.getElementById('currentTrackTitle');
+        const currentTrackArtist = document.getElementById('currentTrackArtist');
+        
+        // ========== MODAL ELEMENTS ==========
+        const tracksBtn = document.getElementById('tracksBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const trackList = document.getElementById('trackList');
+        
+        // ========== SCROLL BUTTON ==========
+        const scrollBtn = document.getElementById('scrollBtn');
+        const linksSection = document.getElementById('linksSection');
+        
+        // ========== AVATAR ==========
+        const avatarImg = document.getElementById('avatarImg');
+        const avatarLoading = document.getElementById('avatarLoading');
+
+        let isPlaying = false;
+        let isDragging = false;
+        
+        // ========== AVATAR LOADING ==========
+        function loadAvatar() {
+            // REPLACE THIS WITH YOUR AVATAR URL
+            const avatarUrl = 'avatar.jpg';
+            
+            const img = new Image();
+            img.onload = function() {
+                avatarImg.src = avatarUrl;
+                avatarImg.style.display = 'block';
+                avatarLoading.style.display = 'none';
+            };
+            
+            img.onerror = function() {
+                // If avatar fails to load, show icon
+                avatarLoading.innerHTML = '<i class="fas fa-user" style="font-size: 2rem; color: rgba(102, 126, 234, 0.5);"></i>';
+                avatarLoading.style.border = '3px solid rgba(102, 126, 234, 0.2)';
+                avatarLoading.style.background = 'rgba(102, 126, 234, 0.1)';
+            };
+            
+            img.src = avatarUrl;
+        }
+        
+        // ========== INIT TRACK LIST ==========
+        function initTrackList() {
+            trackList.innerHTML = '';
+            tracks.forEach((track, index) => {
+                const trackItem = document.createElement('div');
+                trackItem.className = `track-item ${index === currentTrackIndex ? 'active' : ''}`;
+                trackItem.innerHTML = `
+                    <div class="track-number">${index + 1}</div>
+                    <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                    </div>
+                    <div class="track-duration">${track.duration}</div>
+                `;
+                
+                trackItem.addEventListener('click', () => {
+                    changeTrack(index);
+                    closeModal();
+                });
+                
+                trackList.appendChild(trackItem);
+            });
+        }
+        
+        // ========== CHANGE TRACK ==========
+        function changeTrack(index) {
+            if (index === currentTrackIndex) return;
+            
+            currentTrackIndex = index;
+            audio.src = tracks[index].file;
+            
+            // Update active class in list
+            document.querySelectorAll('.track-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+            
+            // Update displayed info
+            currentTrackTitle.textContent = tracks[index].title;
+            currentTrackArtist.textContent = tracks[index].artist;
+            
+            // If music was playing, start new track
+            if (isPlaying) {
+                audio.play();
+            }
+            
+            // Reset progress
+            progressBar.style.width = '0%';
+            currentTimeEl.textContent = '0:00';
+        }
+        
+        // ========== PLAYER CONTROLS ==========
+        function togglePlay() {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playBtn.classList.remove('playing');
+            } else {
+                audio.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playBtn.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        function rewind() {
+            audio.currentTime = Math.max(0, audio.currentTime - 10);
+        }
+        
+        function forward() {
+            audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+        }
+        
+        function updateProgress(e) {
+            if (isDragging) return;
+            
+            const { duration, currentTime } = e.srcElement;
+            const progressPercent = (currentTime / duration) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            
+            const formatTime = (time) => {
+                if (isNaN(time)) return '0:00';
+                const mins = Math.floor(time / 60);
+                const secs = Math.floor(time % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            };
+            
+            currentTimeEl.textContent = formatTime(currentTime);
+            if (duration && !isNaN(duration)) {
+                durationEl.textContent = formatTime(duration);
+            }
+        }
+        
+        function setProgress(e) {
+            const width = this.clientWidth;
+            let clickX;
+            
+            if (e.type === 'click') {
+                clickX = e.offsetX;
+            } else if (e.type === 'mousemove' && isDragging) {
+                const rect = this.getBoundingClientRect();
+                clickX = e.clientX - rect.left;
+            }
+            
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        }
+        
+        function startDrag(e) {
+            isDragging = true;
+            setProgress(e);
+            document.addEventListener('mousemove', setProgress);
+            document.addEventListener('mouseup', stopDrag);
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', setProgress);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+        
+        function setVolume(e) {
+            const width = this.clientWidth;
+            let clickX;
+            
+            if (e.type === 'click') {
+                clickX = e.offsetX;
+            }
+            
+            const volume = Math.min(Math.max(clickX / width, 0), 1);
+            audio.volume = volume;
+            volumeLevel.style.width = `${volume * 100}%`;
+            
+            const volumeIcon = document.querySelector('.volume-control i');
+            if (volume === 0) {
+                volumeIcon.className = 'fas fa-volume-mute';
+            } else if (volume < 0.5) {
+                volumeIcon.className = 'fas fa-volume-down';
+            } else {
+                volumeIcon.className = 'fas fa-volume-up';
+            }
+        }
+        
+        // ========== MODAL CONTROLS ==========
+        function openModal() {
+            modalOverlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            modalOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // ========== SCROLL TO LINKS ==========
+        function scrollToLinks() {
+            linksSection.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+        
+        // ========== EVENT LISTENERS ==========
+        playBtn.addEventListener('click', togglePlay);
+        rewindBtn.addEventListener('click', rewind);
+        forwardBtn.addEventListener('click', forward);
+        
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('loadedmetadata', updateProgress);
+        
+        audio.addEventListener('ended', () => {
+            // Auto-play next track
+            const nextIndex = (currentTrackIndex + 1) % tracks.length;
+            changeTrack(nextIndex);
+        });
+        
+        progressContainer.addEventListener('click', setProgress);
+        progressContainer.addEventListener('mousedown', startDrag);
+        
+        volumeSlider.addEventListener('click', setVolume);
+        
+        // Modal
+        tracksBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+        
+        // Scroll button
+        scrollBtn.addEventListener('click', scrollToLinks);
+        
+        // Show scroll button on mobile
+        function checkScreenSize() {
+            if (window.innerWidth <= 900) {
+                scrollBtn.style.display = 'flex';
+            } else {
+                scrollBtn.style.display = 'none';
+            }
+        }
+        
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            animateParticles();
+            initTrackList();
+            loadAvatar();
+            
+            // Initialize volume
+            audio.volume = 0.7;
+            volumeLevel.style.width = '70%';
+            
+            // Load first track duration
+            audio.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = tracks[currentTrackIndex].duration;
+            });
+            
+            // Check screen size
+            checkScreenSize();
+            window.addEventListener('resize', checkScreenSize);
+        });
+        
+        // Close modal on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+                closeModal();
+            }
+        });
+        
+        // Touch support
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
