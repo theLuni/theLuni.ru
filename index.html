@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUNI | Yakuza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #0a0a0c;
+            color: #e4e4e7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            position: relative;
+        }
+
+        /* Canvas background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        /* Основной контейнер — центрирование */
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(18, 18, 22, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 48px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Хедер — центрированный */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 40px;
+            gap: 16px;
+        }
+
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .name {
+            font-size: 3.5rem;
+            font-weight: 500;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #71717a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 100px;
+            padding: 8px 24px;
+            color: #f87171;
+            font-size: 0.9rem;
+        }
+
+        .status-badge i {
+            font-size: 0.7rem;
+        }
+
+        .best-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 100px;
+            padding: 8px 24px;
+            color: #c4b5fd;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .best-link:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Карточка профиля */
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            background: rgba(24, 24, 28, 0.5);
+            border-radius: 32px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+        }
+
+        .avatar-wrapper {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2a2a35, #1a1a22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            overflow: hidden;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .profile-info h2 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .profile-info .bio {
+            color: #a1a1aa;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            color: #d4d4d8;
+        }
+
+        .skill.java {
+            border-color: rgba(249, 115, 22, 0.3);
+            color: #fb923c;
+        }
+
+        .skill.web {
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+
+        /* Инфо-грид */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .info-item {
+            background: rgba(24, 24, 28, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: #71717a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: 400;
+        }
+
+        .info-value small {
+            font-size: 0.85rem;
+            color: #71717a;
+        }
+
+        /* Ссылки — компактные чипсы */
+        .links-section {
+            margin-bottom: 30px;
+        }
+
+        .links-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .link-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            background: rgba(30, 30, 36, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 40px;
+            color: #d4d4d8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: 0.15s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .link-chip i {
+            font-size: 1rem;
+            color: #9ca3af;
+        }
+
+        .link-chip:hover {
+            background: rgba(45, 45, 52, 0.8);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .link-chip:hover i {
+            color: #c4b5fd;
+        }
+
+        /* Футер */
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            color: #52525b;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 700px) {
+            .container { padding: 30px; }
+            .profile-card { flex-direction: column; text-align: center; }
+            .info-grid { grid-template-columns: 1fr; }
+            .name { font-size: 3rem; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px; border-radius: 32px; }
+            .name { font-size: 2.5rem; }
+            .link-chip { padding: 8px 18px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <!-- Header — центрированный -->
+        <div class="header">
+            <div class="title-group">
+                <div class="name">LUNI</div>
+                <div class="subtitle">YAKUZA</div>
+            </div>
+            <div class="status-badge">
+                <i class="fas fa-circle"></i> BUSY
+            </div>
+            <a href="https://t.me/towaNo_KIga" class="best-link" target="_blank">
+                <i class="fas fa-star"></i> @towaNo_KIga
+            </a>
+        </div>
+
+        <!-- Profile Card с аватаркой из той же папки -->
+        <div class="profile-card">
+            <div class="avatar-wrapper">
+                <img src="avatar.jpg" alt="LUNI" class="avatar" id="avatarImg">
+            </div>
+            <div class="profile-info">
+                <h2>LUNI</h2>
+                <div class="bio">developer · yakuza enthusiast</div>
+                <div class="skills">
+                    <span class="skill">Python</span>
+                    <span class="skill web">WEB</span>
+                    <span class="skill java">Java</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Grid — с исправленным ID -->
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Telegram</div>
+                <div class="info-value">@theLuni</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">TG ID</div>
+                <div class="info-value">5929120983</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">From / Age</div>
+                <div class="info-value">Unknown <small>· 16</small></div>
+            </div>
+        </div>
+
+        <!-- Links (компактные чипсы) -->
+        <div class="links-section">
+            <div class="links-grid">
+                <a href="https://t.me/theLuni" class="link-chip" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+                <a href="https://vk.com/luniyakuza" class="link-chip" target="_blank"><i class="fab fa-vk"></i> VK</a>
+                <a href="https://s.team/p/jwrj-vrrk/hwbgdjvj" class="link-chip" target="_blank"><i class="fab fa-steam"></i> Steam</a>
+                <a href="https://music.yandex.ru/users/ken.mort/playlists/3" class="link-chip" target="_blank"><i class="fab fa-yandex"></i> Music</a>
+                <a href="https://shikimori.one/theLuni/list/anime" class="link-chip" target="_blank"><i class="fas fa-tv"></i> Shikimori</a>
+                <a href="https://github.com/theLuni" class="link-chip" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://www.tiktok.com/@red_tsoik" class="link-chip" target="_blank"><i class="fab fa-tiktok"></i> TikTok</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>⚡ 2026 · LUNI · minimalist edition</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Canvas background
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+
+            function resize() {
+                width = window.innerWidth;
+                height = Math.max(window.innerHeight, document.body.scrollHeight);
+                canvas.width = width;
+                canvas.height = height;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            // Particles
+            const particles = [];
+            for (let i = 0; i < 35; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.15,
+                    vy: (Math.random() - 0.5) * 0.15,
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = '#0a0a0c';
+                ctx.fillRect(0, 0, width, height);
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > width) p.vx *= -1;
+                    if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(160, 140, 220, 0.06)';
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // Аватарка уже грузится из avatar.jpg (прямо в HTML)
+            // Дополнительная обработка на случай ошибки загрузки
+            const avatarImg = document.getElementById('avatarImg');
+            avatarImg.onerror = function() {
+                // Если аватарка не загрузилась, показываем иконку
+                this.style.display = 'none';
+                const wrapper = document.querySelector('.avatar-wrapper');
+                wrapper.innerHTML = '<i class="fas fa-user" style="font-size: 3rem; color: #6b6b76;"></i>';
+            };
+        })();
+    </script>
+</body>
+</html>
